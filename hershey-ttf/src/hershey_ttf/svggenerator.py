@@ -1,16 +1,22 @@
 import os
+from pathlib import Path
 
 import svgwrite
 from svgwrite.shapes import Polyline
 
-from dataclasses import Glyph, Metadata
+from _dataclasses import Glyph, Metadata
 
 base = 16
 cap = -16
 svg_size = 1024
 guard = 12
-line_style = {'fill': 'none', 'stroke': 'black', 'stroke-width': 0, 'stroke-linecap': 'round',
-              'stroke-linejoin': 'round'}
+line_style = {
+    "fill": "none",
+    "stroke": "black",
+    "stroke-width": 0,
+    "stroke-linecap": "round",
+    "stroke-linejoin": "round",
+}
 
 
 def generate(glyph: Glyph, metadata: Metadata):
@@ -19,14 +25,17 @@ def generate(glyph: Glyph, metadata: Metadata):
     The subfolder is the font name.
     The SVG name contains the metadata necessary to import the glyph to the font.
     """
-    print(f'Generating character \'{metadata.character}\' for font {metadata.font_name}')
+    print(f"Generating character '{metadata.character}' for font {metadata.font_name}")
 
     # Assumes font folder already exists
-    font_path = os.path.join(os.getcwd(), 'svgs', metadata.font_name)
+    # font_path = os.path.join(os.getcwd(), "svgs", metadata.font_name)
+    font_path = Path.cwd() / "svgs" / metadata.font_name
 
     left_side_bearing, right_side_bearing = _calculate_bearings(glyph)
-    svg_filename = f'ascii{str(metadata.ascii_value)}_l{left_side_bearing}_r{right_side_bearing}.svg'
-    dwg = svgwrite.Drawing(os.path.join(font_path, svg_filename), viewBox=f"0 0 {svg_size} {svg_size}")
+    svg_filename = f"ascii{str(metadata.ascii_value)}_l{left_side_bearing}_r{right_side_bearing}.svg"
+    dwg = svgwrite.Drawing(
+        os.path.join(font_path, svg_filename), viewBox=f"0 0 {svg_size} {svg_size}"
+    )
 
     points = []
     for coordinate in glyph.coordinates:
@@ -52,8 +61,12 @@ def generate(glyph: Glyph, metadata: Metadata):
 
 def _calculate_bearings(glyph: Glyph):
     if glyph.coordinates:
-        leftmost_point = _map_to_svg(min(coordinate[0] for coordinate in glyph.coordinates if coordinate))
-        rightmost_point = _map_to_svg(max(coordinate[0] for coordinate in glyph.coordinates if coordinate))
+        leftmost_point = _map_to_svg(
+            min(coordinate[0] for coordinate in glyph.coordinates if coordinate)
+        )
+        rightmost_point = _map_to_svg(
+            max(coordinate[0] for coordinate in glyph.coordinates if coordinate)
+        )
     else:
         leftmost_point = rightmost_point = _map_to_svg(0)
 

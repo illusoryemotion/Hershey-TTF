@@ -1,9 +1,9 @@
 import os
 import re
 
-from dataclasses import Glyph
+from _dataclasses import Glyph
 
-offset = ord('R')
+offset = ord("R")
 
 
 def generate_glyphs():
@@ -13,15 +13,15 @@ def generate_glyphs():
     Returns a dictionary where the key is the Hershey number and the value is the glyph information.
     """
 
-    print('\nReading .ocX files')
-    folder = 'modsources'
+    print("\nReading .ocX files")
+    folder = "modsources"
     result = {}
 
     for filename in os.listdir(folder):
-        if not (re.match(r'.+\.oc\d', filename)):
+        if not (re.match(r".+\.oc\d", filename)):
             continue
         with open(os.path.join(folder, filename)) as file:
-            print(f'Reading {filename}')
+            print(f"Reading {filename}")
             for line in _iterate_file(file):
                 glyph = _generate_glyph(line)
                 result[glyph.number] = glyph
@@ -34,15 +34,15 @@ def _iterate_file(file):
     glyph = []
     for line in file:
         # Each glyph begins with a number left padded with spaces
-        if re.match(r'^[ \d]{5}', line) and glyph:
+        if re.match(r"^[ \d]{5}", line) and glyph:
             # Last glyph finished. Yield it.
-            yield _remove_line_breaks(''.join(glyph))
+            yield _remove_line_breaks("".join(glyph))
             glyph = []
         glyph.append(line)
 
 
 def _remove_line_breaks(string):
-    return string.replace('\n', '').replace('\r', '')
+    return string.replace("\n", "").replace("\r", "")
 
 
 def _generate_glyph(line):
@@ -52,7 +52,7 @@ def _generate_glyph(line):
 
     coordinates = []
     for x, y in zip(line[10::2], line[11::2]):
-        if x == ' ' and y == 'R':
+        if x == " " and y == "R":
             # Space + R is a pen up operation
             coordinates.append(None)
         else:
